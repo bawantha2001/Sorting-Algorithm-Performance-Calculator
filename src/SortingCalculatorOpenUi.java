@@ -2,4 +2,3 @@ public class SortingCalculatorOpenUi {
 
    
 }
-
