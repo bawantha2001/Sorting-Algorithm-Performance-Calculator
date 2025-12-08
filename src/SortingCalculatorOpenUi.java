@@ -16,10 +16,10 @@ public class SortingCalculatorOpenUi extends JFrame {
     private JTextArea resultArea;
     private double[] data;
     private JTextArea output;
-   
-   // ui jpanel
-    public SortingCalculatorOpenUi() {
 
+   
+   // ui jpanel all
+    public SortingCalculatorOpenUi() {
         setTitle("Sorting Algorithm Performance Evaluation (CSV Based)");
         setSize(900, 500);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -81,4 +81,3 @@ public class SortingCalculatorOpenUi extends JFrame {
 
    
 }
-
