@@ -119,7 +119,44 @@ public class SortingCalculatorOpenUi extends JFrame {
                         "\nExecution Time: " + time / 1_000_000.0 + " ms\n"
         );
 
-//        detectBestAlgorithm();
+        detectBestAlgorithm();
+    }
+
+    private void detectBestAlgorithm() {
+
+        String[] algorithms = {
+                "Insertion Sort", "Shell Sort",
+                "Merge Sort", "Quick Sort", "Heap Sort"
+        };
+
+        long bestTime = Long.MAX_VALUE;
+        String bestAlgo = "";
+
+        for (String algo : algorithms) {
+
+            double[] copy = Arrays.copyOf(data, data.length);
+            long start = System.nanoTime();
+
+            switch (algo) {
+                case "Insertion Sort" -> Algorithms.insertionSort(copy);
+                case "Shell Sort" -> Algorithms.shellSort(copy);
+                case "Merge Sort" -> Algorithms.mergeSort(copy, 0, copy.length - 1);
+                case "Quick Sort" -> Algorithms.quickSort(copy, 0, copy.length - 1);
+                case "Heap Sort" -> Algorithms.heapSort(copy);
+            }
+
+            long time = System.nanoTime() - start;
+
+            if (time < bestTime) {
+                bestTime = time;
+                bestAlgo = algo;
+            }
+        }
+
+        resultArea.append(
+                "\nBest Performing Algorithm: " + bestAlgo +
+                        "\nBest Time: " + bestTime / 1_000_000.0 + " ms\n"
+        );
     }
 
 
