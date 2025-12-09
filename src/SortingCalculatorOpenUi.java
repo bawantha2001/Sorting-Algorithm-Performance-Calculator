@@ -15,6 +15,7 @@ public class SortingCalculatorOpenUi extends JFrame {
     private DefaultTableModel model;
     private JTextArea resultArea;
     private double[] data;
+    private JComboBox<String> algorithmBox;
     private JTextArea output;
 
    
@@ -33,6 +34,12 @@ public class SortingCalculatorOpenUi extends JFrame {
 
         JButton importBtn = new JButton("Import CSV");
         topPanel.add(importBtn);
+
+        algorithmBox = new JComboBox<>(new String[]{
+                "Insertion Sort", "Shell Sort", "Merge Sort",
+                "Quick Sort", "Heap Sort"
+        });
+        topPanel.add(algorithmBox);
 
         JButton sortBtn = new JButton("Sort & Evaluate");
         topPanel.add(sortBtn);
