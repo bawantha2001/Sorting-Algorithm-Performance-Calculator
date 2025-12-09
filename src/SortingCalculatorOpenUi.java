@@ -2,9 +2,11 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 import helpers.CSVHelper;
+import sorting_algorithms.Algorithms;
 
 import java.awt.*;
 import java.io.File;
+import java.util.Arrays;
 
 
 
@@ -21,7 +23,7 @@ public class SortingCalculatorOpenUi extends JFrame {
    
    // ui jpanel all
     public SortingCalculatorOpenUi() {
-        setTitle("Sorting Algorithm Performance Evaluation (CSV Based)");
+        setTitle("Sorting Algorithm Performance Evaluation");
         setSize(900, 500);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -66,7 +68,10 @@ public class SortingCalculatorOpenUi extends JFrame {
 
                 try {
                     data = CSVHelper.importCSV(file);
-                    output.setText("CSV Imported Successfully!\nData Size: " + data.length + "\n");
+                    for (double datum : data) {
+                        model.addRow(new Object[]{datum, ""});
+                    }
+                    resultArea.setText("CSV Imported Successfully!\nTotal Records: " + data.length);
 
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(this,
@@ -75,9 +80,46 @@ public class SortingCalculatorOpenUi extends JFrame {
                 }
             }
         });
-
+        
+        JOptionPane.showMessageDialog(this, "CSV Import Failed: ", "Error", JOptionPane.ERROR_MESSAGE);
+       
+        sortBtn.addActionListener(e -> sortAndEvaluate());
 
         setVisible(true);
+    }
+
+        private void sortAndEvaluate() {
+
+        if (data == null || data.length == 0) {
+            JOptionPane.showMessageDialog(this, "Please import a CSV first!");
+            return;
+        }
+
+        double[] copy = Arrays.copyOf(data, data.length);
+        String selected = algorithmBox.getSelectedItem().toString();
+
+        long start = System.nanoTime();
+
+        switch (selected) {
+            // case "Insertion Sort" -> Algorithms.insertionSort(copy);
+            // case "Shell Sort" -> Algorithms.shellSort(copy);
+            case "Merge Sort" -> Algorithms.mergeSort(copy, 0, copy.length - 1);
+            // case "Quick Sort" -> Algorithms.quickSort(copy, 0, copy.length - 1);
+            case "Heap Sort" -> Algorithms.quickSort(copy, DISPOSE_ON_CLOSE, HEIGHT);
+        }
+
+        long time = System.nanoTime() - start;
+
+        for (int i = 0; i < copy.length; i++) {
+            model.setValueAt(copy[i], i, 1);
+        }
+
+        resultArea.setText(
+                "Selected Algorithm: " + selected +
+                        "\nExecution Time: " + time / 1_000_000.0 + " ms\n"
+        );
+
+//        detectBestAlgorithm();
     }
 
 
