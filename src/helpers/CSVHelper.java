@@ -13,7 +13,6 @@ public class CSVHelper {
 
         while ((line = br.readLine()) != null) {
 
-            // Skip header
             if (hasHeader) {
                 hasHeader = false;
                 continue;
@@ -23,7 +22,6 @@ public class CSVHelper {
 
             String[] parts = line.split(",");
 
-            // CSV format: index,value
             if (parts.length > 1 && !parts[1].trim().isEmpty()) {
                 double value = Double.parseDouble(parts[1].trim());
                 tempList.add(value);
@@ -31,7 +29,6 @@ public class CSVHelper {
         }
         br.close();
 
-        // Convert List to array
         double[] data = new double[tempList.size()];
         for (int i = 0; i < tempList.size(); i++) {
             data[i] = tempList.get(i);
