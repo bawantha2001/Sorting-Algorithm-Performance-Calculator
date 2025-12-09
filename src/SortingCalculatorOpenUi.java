@@ -101,8 +101,8 @@ public class SortingCalculatorOpenUi extends JFrame {
         long start = System.nanoTime();
 
         switch (selected) {
-            // case "Insertion Sort" -> Algorithms.insertionSort(copy);
-            // case "Shell Sort" -> Algorithms.shellSort(copy);
+             case "Insertion Sort" -> Algorithms.insertionSort(copy);
+             case "Shell Sort" -> Algorithms.shellSort(copy);
             case "Merge Sort" -> Algorithms.mergeSort(copy, 0, copy.length - 1);
             case "Quick Sort" -> Algorithms.quickSort(copy, 0, copy.length - 1);
             case "Heap Sort" -> Algorithms.heapSort(copy);
