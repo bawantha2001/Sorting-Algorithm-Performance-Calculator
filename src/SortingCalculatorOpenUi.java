@@ -58,8 +58,6 @@ public class SortingCalculatorOpenUi extends JFrame {
                     for (double datum : data) {
                         model.addRow(new Object[]{datum, ""});
                     }
-
-
                     resultArea.setText("CSV Imported Successfully!\nTotal Records: " + data.length);
 
                 } catch (Exception ex) {
