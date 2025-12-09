@@ -6,8 +6,10 @@ import sorting_algorithms.Algorithms;
 
 import java.awt.*;
 import java.io.File;
-import java.io.Serial;
 import java.util.Arrays;
+
+
+
 
 
 public class SortingCalculatorOpenUi extends JFrame {
@@ -18,7 +20,8 @@ public class SortingCalculatorOpenUi extends JFrame {
     private JComboBox<String> algorithmBox;
     private JTextArea output;
 
-
+   
+   // ui jpanel all
     public SortingCalculatorOpenUi() {
         setTitle("Sorting Algorithm Performance Evaluation");
         setSize(900, 500);
@@ -45,14 +48,16 @@ public class SortingCalculatorOpenUi extends JFrame {
 
         add(topPanel, BorderLayout.NORTH);
 
-        model = new DefaultTableModel(new String[]{"Original Data", "Sorted Data"}, 0);
+         model = new DefaultTableModel(new String[]{"Original Data", "Sorted Data"}, 0);
         table = new JTable(model);
         add(new JScrollPane(table), BorderLayout.CENTER);
+
 
         resultArea = new JTextArea(6, 50);
         resultArea.setEditable(false);
         resultArea.setFont(new Font("Arial", Font.BOLD, 14));
         add(new JScrollPane(resultArea), BorderLayout.SOUTH);
+
 
          importBtn.addActionListener(e -> {
             JFileChooser chooser = new JFileChooser();
@@ -75,12 +80,15 @@ public class SortingCalculatorOpenUi extends JFrame {
                 }
             }
         });
+        
+        JOptionPane.showMessageDialog(this, "CSV Import Failed: ", "Error", JOptionPane.ERROR_MESSAGE);
+       
         sortBtn.addActionListener(e -> sortAndEvaluate());
 
         setVisible(true);
     }
 
-    private void sortAndEvaluate() {
+        private void sortAndEvaluate() {
 
         if (data == null || data.length == 0) {
             JOptionPane.showMessageDialog(this, "Please import a CSV first!");
@@ -93,8 +101,8 @@ public class SortingCalculatorOpenUi extends JFrame {
         long start = System.nanoTime();
 
         switch (selected) {
-            case "Insertion Sort" -> Algorithms.insertionSort(copy);
-            case "Shell Sort" -> Algorithms.shellSort(copy);
+            // case "Insertion Sort" -> Algorithms.insertionSort(copy);
+            // case "Shell Sort" -> Algorithms.shellSort(copy);
             case "Merge Sort" -> Algorithms.mergeSort(copy, 0, copy.length - 1);
             case "Quick Sort" -> Algorithms.quickSort(copy, 0, copy.length - 1);
             case "Heap Sort" -> Algorithms.heapSort(copy);
@@ -114,6 +122,8 @@ public class SortingCalculatorOpenUi extends JFrame {
 //        detectBestAlgorithm();
     }
 
+
+    // main method 
     public static void main(String[] args) {
         new SortingCalculatorOpenUi();
     }
