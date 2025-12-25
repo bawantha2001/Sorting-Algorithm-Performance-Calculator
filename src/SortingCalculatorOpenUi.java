@@ -9,9 +9,6 @@ import java.io.File;
 import java.util.Arrays;
 
 
-
-
-
 public class SortingCalculatorOpenUi extends JFrame {
     private JTable table;
     private DefaultTableModel model;
@@ -48,7 +45,7 @@ public class SortingCalculatorOpenUi extends JFrame {
 
         add(topPanel, BorderLayout.NORTH);
 
-         model = new DefaultTableModel(new String[]{"Original Data", "Sorted Data"}, 0);
+        model = new DefaultTableModel(new String[]{"Original Data", "Sorted Data"}, 0);
         table = new JTable(model);
         add(new JScrollPane(table), BorderLayout.CENTER);
 
@@ -59,7 +56,7 @@ public class SortingCalculatorOpenUi extends JFrame {
         add(new JScrollPane(resultArea), BorderLayout.SOUTH);
 
 
-         importBtn.addActionListener(e -> {
+        importBtn.addActionListener(e -> {
             JFileChooser chooser = new JFileChooser();
             int result = chooser.showOpenDialog(this);
 
@@ -75,20 +72,18 @@ public class SortingCalculatorOpenUi extends JFrame {
 
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(this,
-                            "CSV Import Failed: " + ex.getMessage(),
+                            "CSV Import Failed",
                             "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
-        
-        JOptionPane.showMessageDialog(this, "CSV Import Failed: ", "Error", JOptionPane.ERROR_MESSAGE);
        
         sortBtn.addActionListener(e -> sortAndEvaluate());
 
         setVisible(true);
     }
 
-        private void sortAndEvaluate() {
+    private void sortAndEvaluate() {
 
         if (data == null || data.length == 0) {
             JOptionPane.showMessageDialog(this, "Please import a CSV first!");
