@@ -7,6 +7,7 @@ import sorting_algorithms.Algorithms;
 import java.awt.*;
 import java.io.File;
 import java.util.Arrays;
+import java.util.Map;
 
 
 public class SortingCalculatorOpenUi extends JFrame {
@@ -14,8 +15,10 @@ public class SortingCalculatorOpenUi extends JFrame {
     private DefaultTableModel model;
     private JTextArea resultArea;
     private double[] data;
-    private JComboBox<String> algorithmBox;
+    private JComboBox<String> columnBox;
+    private Map<String, double[]> columnData;
     private JTextArea output;
+    private JComboBox<String> orderBox;
 
    
    // ui jpanel all
@@ -34,11 +37,19 @@ public class SortingCalculatorOpenUi extends JFrame {
         JButton importBtn = new JButton("Import CSV");
         topPanel.add(importBtn);
 
-        algorithmBox = new JComboBox<>(new String[]{
-                "Insertion Sort", "Shell Sort", "Merge Sort",
-                "Quick Sort", "Heap Sort"
+        columnBox = new JComboBox<>();
+        topPanel.add(new JLabel("Select Column:"));
+        topPanel.add(columnBox);
+
+        orderBox = new JComboBox<>(new String[]{
+                "Insertion Sort",
+                "Shell Sort",
+                "Merge Sort",
+                "Quick Sort",
+                "Heap Sort"
         });
-        topPanel.add(algorithmBox);
+        topPanel.add(new JLabel("Algorithm:"));
+        topPanel.add(orderBox);
 
         JButton sortBtn = new JButton("Sort & Evaluate");
         topPanel.add(sortBtn);
@@ -64,20 +75,50 @@ public class SortingCalculatorOpenUi extends JFrame {
                 File file = chooser.getSelectedFile();
 
                 try {
-                    data = CSVHelper.importCSV(file);
-                    for (double datum : data) {
-                        model.addRow(new Object[]{datum, ""});
+                    columnData = CSVHelper.importCSVWithColumns(file);
+
+                    columnBox.removeAllItems();
+                    model.setRowCount(0);
+
+                    // Populate column selector
+                    for (String col : columnData.keySet()) {
+                        columnBox.addItem(col);
                     }
-                    resultArea.setText("CSV Imported Successfully!\nTotal Records: " + data.length);
+
+                    // Display first column by default
+                    String firstCol = columnBox.getItemAt(0);
+                    data = columnData.get(firstCol);
+
+                    for (double d : data) {
+                        model.addRow(new Object[]{d, ""});
+                    }
+
+                    resultArea.setText(
+                            "CSV Imported Successfully\nColumns Detected: " + columnData.keySet()
+                    );
 
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(this,
-                            "CSV Import Failed",
+                            "CSV Import Failed: " + ex.getMessage(),
                             "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
-       
+
+        columnBox.addActionListener(e -> {
+
+            if (columnData == null) return;
+
+            String selectedColumn = columnBox.getSelectedItem().toString();
+            data = columnData.get(selectedColumn);
+
+            model.setRowCount(0);
+            for (double d : data) {
+                model.addRow(new Object[]{d, ""});
+            }
+        });
+
+
         sortBtn.addActionListener(e -> sortAndEvaluate());
 
         setVisible(true);
@@ -90,31 +131,71 @@ public class SortingCalculatorOpenUi extends JFrame {
             return;
         }
 
-        double[] copy = Arrays.copyOf(data, data.length);
-        String selected = algorithmBox.getSelectedItem().toString();
-
-        long start = System.nanoTime();
-
-        switch (selected) {
-             case "Insertion Sort" -> Algorithms.insertionSort(copy);
-             case "Shell Sort" -> Algorithms.shellSort(copy);
-            case "Merge Sort" -> Algorithms.mergeSort(copy, 0, copy.length - 1);
-            case "Quick Sort" -> Algorithms.quickSort(copy, 0, copy.length - 1);
-            case "Heap Sort" -> Algorithms.heapSort(copy);
-        }
-
-        long time = System.nanoTime() - start;
-
-        for (int i = 0; i < copy.length; i++) {
-            model.setValueAt(copy[i], i, 1);
-        }
-
-        resultArea.setText(
-                "Selected Algorithm: " + selected +
-                        "\nExecution Time: " + time / 1_000_000.0 + " ms\n"
+        final JOptionPane optionPane = new JOptionPane(
+                "Sorting in progress...\nPlease wait",
+                JOptionPane.INFORMATION_MESSAGE,
+                JOptionPane.DEFAULT_OPTION,
+                null,
+                new Object[]{},   // no buttons
+                null
         );
 
-        detectBestAlgorithm();
+        final JDialog dialog = optionPane.createDialog(this, "Sorting");
+        dialog.setModal(false);
+        dialog.setVisible(true);
+
+        SwingWorker<Void, Void> worker = new SwingWorker<>() {
+
+            double[] sortedCopy;
+            long time;
+            String selected;
+
+            @Override
+            protected Void doInBackground() {
+
+                sortedCopy = Arrays.copyOf(data, data.length);
+                selected = orderBox.getSelectedItem().toString();
+
+                long start = System.nanoTime();
+
+                switch (selected) {
+                    case "Insertion Sort" -> Algorithms.insertionSort(sortedCopy);
+                    case "Shell Sort" -> Algorithms.shellSort(sortedCopy);
+                    case "Merge Sort" -> Algorithms.mergeSort(sortedCopy, 0, sortedCopy.length - 1);
+                    case "Quick Sort" -> Algorithms.quickSort(sortedCopy, 0, sortedCopy.length - 1);
+                    case "Heap Sort" -> Algorithms.heapSort(sortedCopy);
+                }
+
+                time = System.nanoTime() - start;
+                return null;
+            }
+
+            @Override
+            protected void done() {
+
+                dialog.dispose();
+
+                for (int i = 0; i < sortedCopy.length; i++) {
+                    model.setValueAt(sortedCopy[i], i, 1);
+                }
+
+                resultArea.setText(
+                        "Selected Algorithm: " + selected +
+                                "\nExecution Time: " + time / 1_000_000.0 + " ms\n"
+                );
+
+                detectBestAlgorithm();
+
+                JOptionPane.showMessageDialog(
+                        SortingCalculatorOpenUi.this,
+                        "Sorting completed successfully",
+                        "Done",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+            }
+        };
+
+        worker.execute();
     }
 
     private void detectBestAlgorithm() {
@@ -149,13 +230,10 @@ public class SortingCalculatorOpenUi extends JFrame {
         }
 
         resultArea.append(
-                "\nBest Performing Algorithm: " + bestAlgo +
-                        "\nBest Time: " + bestTime / 1_000_000.0 + " ms\n"
+                "\nBest Performing Algorithm: " + bestAlgo + "\nBest Time: " + bestTime / 1_000_000.0 + " ms\n"
         );
     }
 
-
-    // main method 
     public static void main(String[] args) {
         new SortingCalculatorOpenUi();
     }

@@ -5,35 +5,53 @@ import java.util.*;
 
 public class CSVHelper {
 
-    public static double[] importCSV(File file) throws IOException {
-        List<Double> tempList = new ArrayList<>();
+    // Returns columnName → data[]
+    public static Map<String, double[]> importCSVWithColumns(File file) throws IOException {
+
+        Map<String, List<Double>> tempMap = new LinkedHashMap<>();
+
         BufferedReader br = new BufferedReader(new FileReader(file));
         String line;
-        boolean hasHeader = true;
 
+        // 🔹 Read header
+        String headerLine = br.readLine();
+        if (headerLine == null) {
+            throw new IOException("Empty CSV file");
+        }
+
+        String[] headers = headerLine.split(",");
+
+        // Initialize lists for each column
+        for (String header : headers) {
+            tempMap.put(header.trim(), new ArrayList<>());
+        }
+
+        // 🔹 Read data rows
         while ((line = br.readLine()) != null) {
-
-            if (hasHeader) {
-                hasHeader = false;
-                continue;
-            }
-
             if (line.trim().isEmpty()) continue;
 
-            String[] parts = line.split(",");
+            String[] values = line.split(",");
 
-            if (parts.length > 1 && !parts[1].trim().isEmpty()) {
-                double value = Double.parseDouble(parts[1].trim());
-                tempList.add(value);
+            for (int i = 0; i < values.length; i++) {
+                String v = values[i].trim();
+                if (!v.isEmpty()) {
+                    tempMap.get(headers[i].trim()).add(Double.parseDouble(v));
+                }
             }
         }
         br.close();
 
-        double[] data = new double[tempList.size()];
-        for (int i = 0; i < tempList.size(); i++) {
-            data[i] = tempList.get(i);
+        // 🔹 Convert List → double[]
+        Map<String, double[]> result = new LinkedHashMap<>();
+        for (String key : tempMap.keySet()) {
+            List<Double> list = tempMap.get(key);
+            double[] arr = new double[list.size()];
+            for (int i = 0; i < list.size(); i++) {
+                arr[i] = list.get(i);
+            }
+            result.put(key, arr);
         }
 
-        return data;
+        return result;
     }
 }
