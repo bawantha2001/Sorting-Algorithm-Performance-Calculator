@@ -233,10 +233,5 @@ public class SortingCalculatorOpenUi extends JFrame {
                 "\nBest Performing Algorithm: " + bestAlgo + "\nBest Time: " + bestTime / 1_000_000.0 + " ms\n"
         );
     }
-
-    public static void main(String[] args) {
-        new SortingCalculatorOpenUi();
-    }
-
    
 }
